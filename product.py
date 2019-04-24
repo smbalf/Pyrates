@@ -7,6 +7,8 @@ class Product(object):
         self.minprice = minprice
         self.maxprice = maxprice
         self.price = random.randint(self.minprice,self.maxprice)
+        self.shipqty = 0
+        self.warehouseqty = 0
     @classmethod
     def create_products(cls):
         cls.products.append(Product("General Goods", 3, 20))
