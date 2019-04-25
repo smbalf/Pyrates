@@ -1,5 +1,7 @@
 import random
 
+
+
 class Product(object):
     products = []
     def __init__(self, name, minprice, maxprice):

@@ -1,18 +1,21 @@
 import random
 from product import Product
 
+
+
 class City(object):
     cities = []
-    def __init__(self, name, has_warehouse, has_bank):
+    def __init__(self, name, has_warehouse, has_bank, has_moneylender):
         self.name = name
         self.has_warehouse = has_warehouse
         self.has_bank = has_bank
+        self.has_moneylender = has_moneylender
         self.create_city_products()
     @classmethod
     def create_cities(cls):
-        cls.cities.append(City("Hong Kong", True, True))
-        cls.cities.append(City("Shanghai", False, False))
-        cls.cities.append(City("London", False, False))
+        cls.cities.append(City("Hong Kong", True, True, True))
+        cls.cities.append(City("Shanghai", False, False, False))
+        cls.cities.append(City("London", False, False, False))
     def create_city_products(self):
         self.city_products = []
         for product in Product.products:

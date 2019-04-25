@@ -6,6 +6,7 @@ from city import City
 os.system('cls')
 
 
+
 ##### GAME FUNCTIONS #####
 def welcome_message():
     print("Welcome to Pyrates!\n")
@@ -18,7 +19,7 @@ def get_firm_name():
 def get_starting_options():
     starting_options = input("How do you wish to start? [1] Cash & Debt [2] Cannons & No Cash/Debt.\n")
     if starting_options == "1":
-        opts = (2500,250,0)
+        opts = (100,5000,0)
     else:
         opts = (0,0,5)
     return opts
@@ -33,4 +34,4 @@ cash, debt, cannons = get_starting_options()
 game = GameManager(name=firm_name,cash=cash,debt=debt,cannons=cannons,shiphold=500)
 
 ##### START THE GAME! #####
-game.StartUp()
+game.start_up()

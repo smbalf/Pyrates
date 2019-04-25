@@ -1,7 +1,10 @@
 import os
 import datetime
+import random
+from pirateattack import PirateEncounter
 from product import Product
 from city import City
+
 
 
 GAME_TITLE = '''
@@ -23,6 +26,8 @@ class GameManager(object):
         self.bank = 0
         self.maxshiphold = kwargs["shiphold"]
         self.current_shiphold = 0
+        self.ship_health = 100
+        self.min_ship_health = 0
         Product.create_products()
         City.create_cities()
         self.current_city = City.cities[0]
@@ -39,7 +44,7 @@ class GameManager(object):
 
     def buy(self):
         buy_select = input("Which product to you want to buy? (1-%s) - Press [c] to cancel." %  str(len(Product.products)))
-        if buy_select == "c":
+        if buy_select.upper() == "C":
             return
         city_product = self.current_city.city_products[int(buy_select)-1]
         qty_to_buy = input("How many %s do you wish to buy?" % city_product.product.name)
@@ -76,13 +81,33 @@ class GameManager(object):
     def visit_bank(self):
         input("How much would you like to deposit?")
 
+    def visit_moneylender(self):
+        payback = input("How much would you like to pay back?")
+        if int(payback) <= self.cash:
+            self.debt -= int(payback)
+            self.cash -= int(payback)
+        borrow = input("How much would you like to borrow? Note: 5% interest with 2x principal repayment. Borrow up to 5x your current cash.")
+        if int(borrow) <= self.cash * 5:
+            self.debt += int(payback) * 2
+            self.cash += int(payback)
+
+
     def display_products(self):
         i = 1
         for cityproduct in self.current_city.city_products:
             print(str(i) + ") " + cityproduct.product.name + "\n   £" + str(cityproduct.price) + " - You hold: " + str(cityproduct.product.shipqty))
             i += 1
 
-    def StartUp(self):
+    def check_price_change(self):
+        result = random.randint(0,100)
+        if result >= 75:
+            for city_product in self.current_city.city_products:
+                city_product.generate_random_price()
+
+    def increase_debt(self):
+        self.debt *= 1.05
+
+    def start_up(self):
         game_running = True
         while game_running:
             ##### GAME INTERFACE ######
@@ -91,26 +116,39 @@ class GameManager(object):
             print(DIVIDER)
             print(f"Firm name: {self.firm_name}")
             print(f"Cash: {self.cash}")
-            print(f"Debt: {self.debt}")
+            print("Debt: {:.0f}".format(self.debt))
+            print(f"Current Hold: {self.current_shiphold}")
             print(f"Cannons: {self.cannons}")
             print(f"City: {self.current_city.name}")
+            print(f"Ship Health: {self.ship_health}")
             print("Date: {:%B %d, %Y}".format(self.current_date))
             print(DIVIDER)
             print("-----City Products-----")
             self.display_products()
+            ##### END OF INTERFACE ######
+
+            if self.ship_health <= self.min_ship_health:
+                game_running = False
             has_bank_string = ""
+            has_moneylender_string = ""
             if self.current_city.has_bank == True:
                 has_bank_string = "[V]isit Bank,"
-            print("Menu: [L]eave Port, [B]uy, [S]ell, %s [T]ransfer Warehouse, [Q]uit" % has_bank_string)
+            if self.current_city.has_moneylender == True:
+                has_moneylender_string = "[M]oneylender,"
+            print("Menu: [L]eave Port, [B]uy, [S]ell, %s %s [T]ransfer Warehouse, [Q]uit" % (has_bank_string, has_moneylender_string))
             menu_option = input("What would you like to do?")
-            if menu_option == "l":
+            if menu_option.upper() == "L":
                 self.current_city, self.current_date = self.leave_port(City.cities, self.current_date)
-            elif menu_option == "b":
+                self.check_price_change()
+                self.increase_debt()
+                pirates = PirateEncounter(self)
+            elif menu_option.upper() == "B":
                 self.buy()
-            elif menu_option == "s":
+            elif menu_option.upper() == "S":
                 self.sell()
-            elif menu_option == "v" and self.current_city.has_bank == True:
+            elif menu_option.upper() == "V" and self.current_city.has_bank == True:
                 self.visit_bank()
-            elif menu_option == "q":
+            elif menu_option.upper() == "M":
+                self.visit_moneylender()
+            elif menu_option.upper() == "Q":
                 game_running = False
-        
