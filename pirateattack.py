@@ -6,7 +6,7 @@ import time
 class PirateEncounter(object):
     def __init__(self, game):
         self.game = game
-        self.pirate_risk = 100
+        self.pirate_risk = 0
         self.pirate_strength = 10
         self.change_for_escape = 15
         self.check_for_pirates()
@@ -40,6 +40,7 @@ class PirateEncounter(object):
         self.game.ship_health -= damage_taken
         if self.game.ship_health <= 0:
             print("Your ship has been destroyed!\n")
+        self.game.ship_health = 0
 
 
     def fight(self):

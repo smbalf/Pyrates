@@ -4,7 +4,7 @@ import random
 from pirateattack import PirateEncounter
 from product import Product
 from city import City
-
+from gamedata import load_city_data, load_product_data
 
 
 GAME_TITLE = '''
@@ -28,10 +28,12 @@ class GameManager(object):
         self.current_shiphold = 0
         self.ship_health = 100
         self.min_ship_health = 0
-        Product.create_products()
-        City.create_cities()
+        #Product.create_products()
+        #City.create_cities()
+        load_city_data(City)
+        load_product_data(Product)
         self.current_city = City.cities[0]
-        self.current_date = datetime.datetime(1820,1,1)
+        self.current_date = datetime.datetime(1620,1,1)
 
     def leave_port(self, cities, current_date):
         i = 1
@@ -41,6 +43,19 @@ class GameManager(object):
         select_city = input("\nWhich city wish to travel to?: \n")
         current_date += datetime.timedelta(days=1)
         return cities[int(select_city) - 1], current_date
+
+
+    def display_products(self):
+        i = 1 
+        for cityproduct in self.current_city.city_products:
+            print(str(i) + ") " + cityproduct.product.name + "\n   £" + str(cityproduct.product.price) + " - You hold: " + str(cityproduct.product.shipqty))
+            i += 1
+
+    def check_price_change(self):
+        result = random.randint(0,100)
+        if result >= 75:
+            for city_product in self.current_city.city_products:
+                city_product.generate_random_price()
 
     def buy(self):
         buy_select = input("Which product to you want to buy? (1-%s) - Press [c] to cancel." %  str(len(Product.products)))
@@ -74,7 +89,7 @@ class GameManager(object):
             city_product.product.shipqty -= int(qty_to_sell)
             self.current_shiphold -= int(qty_to_sell)
         else:
-            print("You don't have that many to sel!")
+            print("You don't have that many to sell!")
             input(PRESS_ANY_KEY)
 
 
@@ -86,23 +101,13 @@ class GameManager(object):
         if int(payback) <= self.cash:
             self.debt -= int(payback)
             self.cash -= int(payback)
-        borrow = input("How much would you like to borrow? Note: 5% interest with 2x principal repayment. Borrow up to 5x your current cash.")
-        if int(borrow) <= self.cash * 5:
-            self.debt += int(payback) * 2
-            self.cash += int(payback)
+        borrow = input("How much would you like to borrow? Note: 5% interest with 2x principal repayment.")
+        if int(borrow) <= 10000:
+            self.debt += int(borrow) * 2
+            self.cash += int(borrow)
+        else:
+            input("You can't borrow more than £10,000!")
 
-
-    def display_products(self):
-        i = 1
-        for cityproduct in self.current_city.city_products:
-            print(str(i) + ") " + cityproduct.product.name + "\n   £" + str(cityproduct.price) + " - You hold: " + str(cityproduct.product.shipqty))
-            i += 1
-
-    def check_price_change(self):
-        result = random.randint(0,100)
-        if result >= 75:
-            for city_product in self.current_city.city_products:
-                city_product.generate_random_price()
 
     def increase_debt(self):
         self.debt *= 1.05
@@ -123,8 +128,9 @@ class GameManager(object):
             print(f"Ship Health: {self.ship_health}")
             print("Date: {:%B %d, %Y}".format(self.current_date))
             print(DIVIDER)
-            print("-----City Products-----")
+            print("-------- City Products --------")
             self.display_products()
+            print("\n-------------------------------\n")
             ##### END OF INTERFACE ######
 
             if self.ship_health <= self.min_ship_health:
@@ -132,10 +138,10 @@ class GameManager(object):
             has_bank_string = ""
             has_moneylender_string = ""
             if self.current_city.has_bank == True:
-                has_bank_string = "[V]isit Bank,"
+                has_bank_string = " [V]isit Bank,"
             if self.current_city.has_moneylender == True:
-                has_moneylender_string = "[M]oneylender,"
-            print("Menu: [L]eave Port, [B]uy, [S]ell, %s %s [T]ransfer Warehouse, [Q]uit" % (has_bank_string, has_moneylender_string))
+                has_moneylender_string = " [M]oneylender,"
+            print("Menu: [L]eave Port, [B]uy, [S]ell,%s [T]ransfer Warehouse,%s [Q]uit" % (has_bank_string, has_moneylender_string))
             menu_option = input("What would you like to do?")
             if menu_option.upper() == "L":
                 self.current_city, self.current_date = self.leave_port(City.cities, self.current_date)
