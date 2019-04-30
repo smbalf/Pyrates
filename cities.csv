@@ -1,7 +1,7 @@
-name,has_warehouse,has_bank,has_moneylender
-Hong Kong,True,True,True
-Shanghai,False,False,False
-London,False,False,False
-Seville,False,False,False
-Tangiers,False,False,False
-Jaffa,False,False,False
+num,name,has_warehouse,has_bank,has_moneylender
+1,Hong Kong,True,True,True
+2,Shanghai,False,False,False
+3,London,False,False,False
+4,Seville,False,False,False
+5,Tangiers,False,False,False
+6,Jaffa,False,False,False

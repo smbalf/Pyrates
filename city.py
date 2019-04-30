@@ -5,7 +5,8 @@ from product import Product
 
 class City(object):
     cities = []
-    def __init__(self, name, has_warehouse, has_bank, has_moneylender):
+    def __init__(self, num, name, has_warehouse, has_bank, has_moneylender):
+        self.num = num
         self.name = name
         self.has_warehouse = has_warehouse
         self.has_bank = has_bank
@@ -15,13 +16,12 @@ class City(object):
     def create_city_products(self):
         self.city_products = []
         for product in Product.products:
-            self.city_products.append(CityProduct(self, product)) 
+            self.city_products.append(CityProduct(self, product))
             #for every 'product' in Product.products list, append to city_products
-    
+
     @classmethod
     def create_city(cls, **kwargs):
         cls.cities.append(City(**kwargs))
-
 
 
 class CityProduct(object):
@@ -29,6 +29,6 @@ class CityProduct(object):
         self.city = city
         self.product = product  
         self.generate_random_price()
-    
+
     def generate_random_price(self):
         self.price = random.randint(self.product.minprice, self.product.maxprice)

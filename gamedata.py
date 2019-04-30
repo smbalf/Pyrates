@@ -1,5 +1,6 @@
 import csv
 
+
 def load_city_data(city):
     with open(r'Pyrates\cities.csv') as csvfile:
         reader = csv.DictReader(csvfile)
