@@ -1,3 +1,7 @@
+General
+- ValueError Checks
+- Save game?
+
 Shipyard
     Cannons
     - Buy cannons [x]

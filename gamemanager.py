@@ -58,39 +58,51 @@ class GameManager(object):
 
     def buy(self, products):
         buy_select = input(f"Which product do you want to buy? (1-{str(len(Product.products))}) - Press [C] to cancel.")
+        try:
+            if int(buy_select) > len(Product.products):
+                return
+            city_product = products[int(buy_select) - 1]
+            afford = int(self.cash / city_product.price)
+            print(f"You can afford {afford} {city_product.name}")
+            qty_to_buy = input(f"How many {city_product.name} do you wish to buy?")
+            cost_to_buy = city_product.price * int(qty_to_buy)
+            print(f"This will cost you £{str(cost_to_buy)}.")
+            if cost_to_buy <= self.cash:
+                if self.current_shiphold + int(qty_to_buy) <= self.maxshiphold:
+                    self.cash -= cost_to_buy
+                    city_product.shipqty += int(qty_to_buy)
+                    self.current_shiphold += int(qty_to_buy)
+                else:
+                    print("There is not enough room on your ship!")
+                    input(PRESS_ANY_KEY)
+            else:
+                print("You don't have enough money.")
+                input(PRESS_ANY_KEY)
+        except ValueError:
+            print(f"Try again {self.pirate_name}...")
+            time.sleep(1)
         if buy_select.upper() == "C":
             return
-        city_product = products[int(buy_select) - 1]
-        afford = int(self.cash / city_product.price)
-        print(f"You can afford {afford} {city_product.name}")
-        qty_to_buy = input(f"How many {city_product.name} do you wish to buy?")
-        cost_to_buy = city_product.price * int(qty_to_buy)
-        print(f"This will cost you £{str(cost_to_buy)}.")
-        if cost_to_buy <= self.cash:
-            if self.current_shiphold + int(qty_to_buy) <= self.maxshiphold:
-                self.cash -= cost_to_buy
-                city_product.shipqty += int(qty_to_buy)
-                self.current_shiphold += int(qty_to_buy)
-            else:
-                print("There is not enough room on your ship!")
-                input(PRESS_ANY_KEY)
-        else:
-            print("You don't have enough money.")
-            input(PRESS_ANY_KEY)
 
     def sell(self, products):
         sell_select = input(f"Which product do you want to sell? (1-{str(len(Product.products))}) - Press [C] to cancel.")
+        try:
+            if int(sell_select) > len(Product.products):
+                return
+            city_product = products[int(sell_select) - 1]
+            qty_to_sell = input(f"How many {city_product.name} do you wish to sell?")
+            if int(qty_to_sell) <= city_product.shipqty:
+                self.cash += int(qty_to_sell) * city_product.price
+                city_product.shipqty -= int(qty_to_sell)
+                self.current_shiphold -= int(qty_to_sell)
+            else:
+                print("You don't have that many to sell!")
+                input(PRESS_ANY_KEY)
+        except ValueError:
+            print(f"Try again {self.pirate_name}...")
+            time.sleep(1)
         if sell_select == "c":
             return
-        city_product = products[int(sell_select) - 1]
-        qty_to_sell = input(f"How many {city_product.name} do you wish to sell?")
-        if int(qty_to_sell) <= city_product.shipqty:
-            self.cash += int(qty_to_sell) * city_product.price
-            city_product.shipqty -= int(qty_to_sell)
-            self.current_shiphold -= int(qty_to_sell)
-        else:
-            print("You don't have that many to sell!")
-            input(PRESS_ANY_KEY)
 ###########################
 
 ##### BANKING THINGS ######
