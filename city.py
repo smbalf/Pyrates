@@ -5,12 +5,11 @@ from product import Product
 
 class City(object):
     cities = []
-    def __init__(self, num, name, has_warehouse, has_bank, has_moneylender):
+    def __init__(self, num, name, has_bank, has_shipyard):
         self.num = num
         self.name = name
-        self.has_warehouse = has_warehouse
-        self.has_bank = has_bank
-        self.has_moneylender = has_moneylender
+        self.has_bank = has_bank == "True"
+        self.has_shipyard = has_shipyard == "True"
         self.create_city_products()
 
     def create_city_products(self):

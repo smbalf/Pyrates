@@ -11,27 +11,31 @@ os.system('cls')
 def welcome_message():
     print("Welcome to Pyrates!\n")
 
-def get_firm_name():
-    firm_name = input("Please enter your firm name:\n")
-    return firm_name
+def get_pirate_name():
+    pirate_name = input("What is your name?:\n")
+    return pirate_name
+
+def get_vessel_name():
+    vessel_name = input("What shall you name your vessel?:\nThe ")
+    return vessel_name
 
 # SHOULD ADD "ARE YOU SURE?" HERE
 def get_starting_options():
-    starting_options = input("How do you wish to start? [1] Cash & Debt [2] Cannons & No Cash/Debt.\n")
+    starting_options = input("How do you wish to start? [1] Cash & No Cannons [2] Cannons & No Cash.\n")
     if starting_options == "1":
-        opts = (100,5000,0)
+        opts = (250,0)
     else:
-        opts = (0,0,5)
+        opts = (0,5)
     return opts
   
 
 ##### GAME OPTIONS #####
 welcome_message()
-firm_name = get_firm_name()
+pirate_name = get_pirate_name()
+vessel_name = get_vessel_name()
+cash, cannons = get_starting_options()
 
-cash, debt, cannons = get_starting_options()
-
-game = GameManager(name=firm_name,cash=cash,debt=debt,cannons=cannons,shiphold=500)
+game = GameManager(name=pirate_name, vessel=vessel_name, cash=cash, cannons=cannons, shiphold=500, shiphealth=100)
 
 ##### START THE GAME! #####
 game.start_up()

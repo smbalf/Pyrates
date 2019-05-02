@@ -1,6 +1,7 @@
 import os
 import datetime
 import random
+import time
 from pirateattack import PirateEncounter
 from product import Product
 from city import City, CityProduct
@@ -19,15 +20,16 @@ DIVIDER = "☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲☲
 
 class GameManager(object):
     def __init__(self,**kwargs):
-        self.firm_name = kwargs["name"]
+        self.pirate_name = kwargs["name"]
+        self.vessel_name = kwargs["vessel"]
         self.cash = kwargs["cash"]
-        self.debt = kwargs["debt"]
         self.cannons = kwargs["cannons"]
         self.bank = 0
         self.maxshiphold = kwargs["shiphold"]
+        self.maxshiphealth = kwargs["shiphealth"]
+        self.min_shiphealth = 0
         self.current_shiphold = 0
-        self.ship_health = 100
-        self.min_ship_health = 0
+        self.current_shiphealth = 100
         #Product.create_products()
         #City.create_cities()
         load_city_data(City)
@@ -50,7 +52,7 @@ class GameManager(object):
 
     def check_price_change(self, products):
         result = random.randint(0,100)
-        if result >= 55:
+        if result >= 10:
             for city_product in products:
                 city_product.generate_random_price()
 
@@ -59,6 +61,8 @@ class GameManager(object):
         if buy_select.upper() == "C":
             return
         city_product = products[int(buy_select) - 1]
+        afford = int(self.cash / city_product.price)
+        print(f"You can afford {afford} {city_product.name}")
         qty_to_buy = input(f"How many {city_product.name} do you wish to buy?")
         cost_to_buy = city_product.price * int(qty_to_buy)
         print(f"This will cost you £{str(cost_to_buy)}.")
@@ -89,26 +93,77 @@ class GameManager(object):
             input(PRESS_ANY_KEY)
 ###########################
 
-
 ##### BANKING THINGS ######
     def visit_bank(self):
-        input("How much would you like to deposit?")
-
-    def visit_moneylender(self):
-        payback = input("How much would you like to pay back?")
-        if int(payback) <= self.cash:
-            self.debt -= int(payback)
-            self.cash -= int(payback)
-        borrow = input("How much would you like to borrow? Note: 5% interest with 2x principal repayment.")
-        if int(borrow) <= 10000:
-            self.debt += int(borrow) * 2
-            self.cash += int(borrow)
+        deposit = input("How much would you like to deposit?")
+        if int(deposit) <= self.cash:
+            self.bank += int(deposit)
+            self.cash -= int(deposit)
         else:
-            input("You can't borrow more than £10,000!")
-
-    def increase_debt(self):
-        self.debt *= 1.05
+            print("You don't have that much!")
+        print(f"You currently have £{str(self.bank)} in the bank.")
+        withdraw = input("How much would you like to withdraw?\n")
+        if int(withdraw) <= self.bank:
+            self.cash += int(withdraw)
+            self.bank -= int(withdraw)
+        else:
+            print("You don't have that much!")
 ############################
+
+##### SHIPYARD ######
+
+    def shipyard(self):
+        print(f"Welcome to the shipyard {self.pirate_name}")
+        shipyard_option = input(f"What shall we do for the {self.vessel_name}? [C]annons, [R]epair, [I]ncrease Shiphold")
+        if shipyard_option.upper() == "C":
+            cannon_price = 500
+            print(f"Cannons cost £{str(cannon_price)} to be fitted.")
+            buy_cannons = input("How many would you like to fit?\n")
+            cannon_cost = int(buy_cannons) * cannon_price
+            if cannon_cost <= self.cash:
+                self.cannons += int(buy_cannons)
+                self.cash -= cannon_cost
+            elif cannon_cost > self.cash:
+                print("You can't afford that many a cannon!")
+                time.sleep(3)
+        elif shipyard_option.upper() == "R": #and self.current_shiphealth == self.maxshiphealth:
+            if self.current_shiphealth == self.maxshiphealth:
+                print(f"The {self.vessel_name} is already in fine shape!")
+                time.sleep(3)
+            else:
+                repair_price = 10
+                repair_damage = (self.maxshiphealth - self.current_shiphealth)
+                repair_cost = (repair_damage) * repair_price
+                print(f"To fully repair the {self.vessel_name} will cost £{str(repair_cost)}")
+                repair_vessel = input("Shall we start the [R]epairs or [N]ot Cap'n?")
+                if repair_vessel.upper() == "R" and repair_cost <= self.cash:
+                    self.current_shiphealth += repair_damage
+                    self.cash -= repair_cost
+                elif repair_vessel.upper() == "R" and repair_cost > self.cash:
+                    print(f"You can't afford to repair the {self.vessel_name} Cap'n...")
+                    time.sleep(3)
+                if repair_vessel.upper() == "N":
+                    return
+        elif shipyard_option.upper() == "I":
+            print(f"The {self.vessel_name} can hold up to {str(self.maxshiphold)}.")
+            expand_hold = input("Shall we [I]ncrease the shiphold or [N]ot?\n")
+            if expand_hold.upper() == "I":
+                expand_price = 50
+                print(f"Every extra cargo space will cost you £{expand_price} Cap'n.")
+                expand_option = input("How much extra cargo space shall we add?")
+                expand_cost = expand_price * int(expand_option)
+                if expand_cost <= self.cash:
+                    self.maxshiphold += int(expand_option)
+                    self.cash -= expand_cost
+                elif expand_cost > self.cash:
+                    print("You can't afford that much space Cap'n!")
+                    time.sleep(3)
+            elif expand_hold.upper() == "N":
+                return    
+
+
+
+######################
 
     def start_up(self):
         game_running = True
@@ -118,13 +173,13 @@ class GameManager(object):
             os.system("cls")
             print(GAME_TITLE)
             print(DIVIDER)
-            print(f"Firm name: {self.firm_name}")
+            print(f"Ahoy {self.pirate_name}!")
+            print(f"Welcome aboard the {self.vessel_name}")
             print(f"Cash: {self.cash}")
-            print("Debt: {:.0f}".format(self.debt))
-            print(f"Current Hold: {self.current_shiphold}")
+            print(f"Current Hold: {self.current_shiphold}/{self.maxshiphold}")
+            print(f"Ship Health: {self.current_shiphealth}/{self.maxshiphealth}")
             print(f"Cannons: {self.cannons}")
             print(f"City: {self.current_city.name}")
-            print(f"Ship Health: {self.ship_health}")
             print("Date: {:%B %d, %Y}".format(self.current_date))
             print(DIVIDER)
             print("-------- City Products --------")
@@ -132,28 +187,34 @@ class GameManager(object):
             print("-------------------------------\n")
             ##### END OF INTERFACE ######
 
-            if self.ship_health <= self.min_ship_health:
+            if self.current_shiphealth <= self.min_shiphealth:
                 game_running = False
+
             has_bank_string = ""
-            has_moneylender_string = ""
             if self.current_city.has_bank == True:
                 has_bank_string = " [V]isit Bank,"
-            if self.current_city.has_moneylender == True:
-                has_moneylender_string = " [M]oneylender,"
-            print("Menu: [L]eave Port, [B]uy, [S]ell,%s [T]ransfer Warehouse,%s [Q]uit" % (has_bank_string, has_moneylender_string))
+            
+            has_shipyard_string = ""
+            if self.current_city.has_shipyard == True:
+                has_shipyard_string = " [S]hipyard,"
+
+            ##### GAME MENU #####
+            print(F"Menu: [L]eave Port, [T]rade,{has_shipyard_string}{has_bank_string} [Q]uit")  #this then should change to new one since = true
             menu_option = input("What would you like to do?")
             if menu_option.upper() == "L":
                 self.current_city, self.current_date = self.leave_port(City.cities, self.current_date)
                 self.check_price_change(Product.products)
-                self.increase_debt()
+                #ADD CHECK SO PRICES DON'T CHANGE IN SAME CITY...
                 pirates = PirateEncounter(self)
-            elif menu_option.upper() == "B":
-                self.buy(Product.products)
+            elif menu_option.upper() == "T":
+                trade_option = input("Would you like to [B]uy or [S]ell goods?")
+                if trade_option.upper() == "B":
+                    self.buy(Product.products)
+                elif trade_option.upper() == "S":
+                    self.sell(Product.products)
             elif menu_option.upper() == "S":
-                self.sell(Product.products)
+                self.shipyard()
             elif menu_option.upper() == "V" and self.current_city.has_bank == True:
                 self.visit_bank()
-            elif menu_option.upper() == "M":
-                self.visit_moneylender()
             elif menu_option.upper() == "Q":
                 game_running = False

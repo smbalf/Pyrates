@@ -1,0 +1,35 @@
+Shipyard
+    Cannons
+    - Buy cannons [x]
+    - Lose Cannons during fight [maybe..?]
+
+    Shiphold
+    - Increase Shiphold [x]
+
+    Shiphealth
+    - Repair your Shiphealth [x]
+
+Player
+- Player name [x]
+- Vessel name [x]
+- Hire crew
+- Piracy rating for destroying vessels
+
+Nation Navies
+- English, Spanish, Dutch, Venetian, Genoese Navies
+- Option to bribe them
+- Only attack based off Piracy rating
+
+Merchant Fleets
+- English, Spanish, Dutch, Venetian, Genoese Merchants
+- Attack them
+
+Time
+- Time to move between areas
+
+Cruise
+- Cruise in a region
+- Encounter: Navy, Merchant, Nothing
+
+JSON
+- Upgrade to using JSON instead of CSV
