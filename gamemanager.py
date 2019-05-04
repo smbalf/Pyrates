@@ -108,16 +108,20 @@ class GameManager(object):
 ##### BANKING THINGS ######
     def visit_bank(self):
         deposit = input("How much would you like to deposit?")
-        if int(deposit) <= self.cash:
-            self.bank += int(deposit)
-            self.cash -= int(deposit)
-        else:
-            print("You don't have that much!")
-        print(f"You currently have £{str(self.bank)} in the bank.")
-        withdraw = input("How much would you like to withdraw?\n")
-        if int(withdraw) <= self.bank:
-            self.cash += int(withdraw)
-            self.bank -= int(withdraw)
+        try:
+            if int(deposit) <= self.cash:
+                self.bank += int(deposit)
+                self.cash -= int(deposit)
+            else:
+                print("You don't have that much!")
+            print(f"You currently have £{str(self.bank)} in the bank.")
+            withdraw = input("How much would you like to withdraw?\n")
+            if int(withdraw) <= self.bank:
+                self.cash += int(withdraw)
+                self.bank -= int(withdraw)
+        except ValueError:
+            print(f"Try again {self.pirate_name}...")
+            time.sleep(1)
         else:
             print("You don't have that much!")
 ############################
@@ -127,51 +131,67 @@ class GameManager(object):
     def shipyard(self):
         print(f"Welcome to the shipyard {self.pirate_name}")
         shipyard_option = input(f"What shall we do for the {self.vessel_name}? [C]annons, [R]epair, [I]ncrease Shiphold")
+        # BUYING CANNONS
         if shipyard_option.upper() == "C":
             cannon_price = 500
             print(f"Cannons cost £{str(cannon_price)} to be fitted.")
             buy_cannons = input("How many would you like to fit?\n")
             cannon_cost = int(buy_cannons) * cannon_price
-            if cannon_cost <= self.cash:
-                self.cannons += int(buy_cannons)
-                self.cash -= cannon_cost
-            elif cannon_cost > self.cash:
-                print("You can't afford that many a cannon!")
-                time.sleep(3)
+            try:
+                if cannon_cost <= self.cash:
+                    self.cannons += int(buy_cannons)
+                    self.cash -= cannon_cost
+                elif cannon_cost > self.cash:
+                    print("You can't afford that many a cannon!")
+                    time.sleep(2)
+            except ValueError:
+                print(f"Try again {self.pirate_name}...")
+                time.sleep(2)
+        # BUYING REPAIRS TO VESSEL
         elif shipyard_option.upper() == "R": #and self.current_shiphealth == self.maxshiphealth:
             if self.current_shiphealth == self.maxshiphealth:
                 print(f"The {self.vessel_name} is already in fine shape!")
-                time.sleep(3)
+                time.sleep(2)
             else:
                 repair_price = 10
                 repair_damage = (self.maxshiphealth - self.current_shiphealth)
                 repair_cost = (repair_damage) * repair_price
                 print(f"To fully repair the {self.vessel_name} will cost £{str(repair_cost)}")
                 repair_vessel = input("Shall we start the [R]epairs or [N]ot Cap'n?")
-                if repair_vessel.upper() == "R" and repair_cost <= self.cash:
-                    self.current_shiphealth += repair_damage
-                    self.cash -= repair_cost
-                elif repair_vessel.upper() == "R" and repair_cost > self.cash:
-                    print(f"You can't afford to repair the {self.vessel_name} Cap'n...")
-                    time.sleep(3)
                 if repair_vessel.upper() == "N":
-                    return
+                    return                
+                try:
+                    if repair_vessel.upper() == "R" and repair_cost <= self.cash:
+                        self.current_shiphealth += repair_damage
+                        self.cash -= repair_cost
+                    elif repair_vessel.upper() == "R" and repair_cost > self.cash:
+                        print(f"You can't afford to repair the {self.vessel_name} Cap'n...")
+                        time.sleep(3)
+                except ValueError:
+                    print(f"Try again {self.pirate_name}...")
+                    time.sleep(2)
+        # BUYING MORE VESSEL STORAGE SPACE
         elif shipyard_option.upper() == "I":
             print(f"The {self.vessel_name} can hold up to {str(self.maxshiphold)}.")
             expand_hold = input("Shall we [I]ncrease the shiphold or [N]ot?\n")
-            if expand_hold.upper() == "I":
-                expand_price = 50
-                print(f"Every extra cargo space will cost you £{expand_price} Cap'n.")
-                expand_option = input("How much extra cargo space shall we add?")
-                expand_cost = expand_price * int(expand_option)
-                if expand_cost <= self.cash:
-                    self.maxshiphold += int(expand_option)
-                    self.cash -= expand_cost
-                elif expand_cost > self.cash:
-                    print("You can't afford that much space Cap'n!")
-                    time.sleep(3)
-            elif expand_hold.upper() == "N":
-                return    
+            if expand_hold.upper() == "N":
+                return  
+            try:
+                if expand_hold.upper() == "I":
+                    expand_price = 50
+                    print(f"Every extra cargo space will cost you £{expand_price} Cap'n.")
+                    expand_option = input("How much extra cargo space shall we add?")
+                    expand_cost = expand_price * int(expand_option)
+                    if expand_cost <= self.cash:
+                        self.maxshiphold += int(expand_option)
+                        self.cash -= expand_cost
+                    elif expand_cost > self.cash:
+                        print("You can't afford that much space Cap'n!")
+                        time.sleep(2)
+            except ValueError:
+                print(f"Try again {self.pirate_name}...")
+                time.sleep(1)
+  
 
 
 

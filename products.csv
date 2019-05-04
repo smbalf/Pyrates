@@ -1,11 +1,11 @@
 num,name,minprice,maxprice
-1,Spice,400,2000
-2,Opium,100,340
-3,Luxury Textiles,20,50
-4,Cotton,5,12
-5,Raw Metals,50,160
-6,Bullion,10000,11000
-7,Grain,30,90
+1,Cotton,5,13
+2,Grain,30,90
+3,Wine,20,80
+4,Luxury Textiles,20,80
+5,Arms,40,100
+6,Raw Metals,50,160
+7,Opium,100,340
 8,Slaves,200,450
-9,Wine,20,80
-10,Arms,40,100
+9,Spice,400,2000
+10,Bullion,10000,12550
