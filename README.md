@@ -1,3 +1,3 @@
 # Pyrate
 
-TBH nothing much yet. But soon full imba pelit kkles.
+Simple buy low sell high game python project
